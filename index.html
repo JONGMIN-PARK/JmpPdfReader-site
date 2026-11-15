@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PDF Reader — Fast PDF viewer for Windows</title>
+<meta name="description" content="A fast, native PDF viewer and editor for Windows. Opens quicker than Edge and Chrome, uses a third of the memory. Free 7-day trial.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+  /* Layout: single centered column, full-width tinted bands; technical/dark-first identity,
+     app's own blue (#3d7bfd) as the single accent, warm-neutral ink, mono for the numbers. */
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f7fa;
+    --card: #ffffff;
+    --fg: #14161c;
+    --fg-dim: #5a6070;
+    --border: #e4e7ee;
+    --accent: #2f6bfd;
+    --accent-ink: #ffffff;
+    --good: #16a34a;
+    --shadow: 0 10px 40px #1116210f;
+    --mono: "SFMono-Regular", "JetBrains Mono", "Consolas", ui-monospace, monospace;
+    --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c0e13;
+      --surface: #12151c;
+      --card: #161a22;
+      --fg: #eef1f6;
+      --fg-dim: #969cad;
+      --border: #242a36;
+      --accent: #5b8bff;
+      --accent-ink: #0c0e13;
+      --shadow: 0 12px 44px #00000066;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c0e13;
+    --surface: #12151c;
+    --card: #161a22;
+    --fg: #eef1f6;
+    --fg-dim: #969cad;
+    --border: #242a36;
+    --accent: #5b8bff;
+    --accent-ink: #0c0e13;
+    --shadow: 0 12px 44px #00000066;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.12; margin: 0; }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+
+  /* nav */
+  header.nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+  .nav-row { display: flex; align-items: center; gap: 18px; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+  .brand .mark { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, var(--accent), #8ab0ff); display: grid; place-items: center; color: #fff; font-size: 15px; }
+  .nav-links { margin-left: auto; display: flex; align-items: center; gap: 22px; }
+  .nav-links a { text-decoration: none; color: var(--fg-dim); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--fg); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--body); font-weight: 600; font-size: 15px; text-decoration: none; padding: 11px 18px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { filter: brightness(1.07); }
+  .btn-ghost { background: transparent; color: var(--fg); border-color: var(--border); }
+  .btn-ghost:hover { background: var(--surface); }
+  .nav-links .btn { padding: 8px 15px; font-size: 14px; }
+
+  /* hero */
+  .hero { padding-top: 64px; padding-bottom: 20px; text-align: center; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); padding: 6px 13px; border-radius: 999px; letter-spacing: 0.01em; }
+  .hero h1 { font-size: clamp(34px, 6.4vw, 60px); font-weight: 700; letter-spacing: -0.02em; margin-top: 22px; }
+  .hero h1 .hl { color: var(--accent); }
+  .hero p.lede { font-size: clamp(16px, 2.3vw, 20px); color: var(--fg-dim); max-width: 46ch; margin: 20px auto 0; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 30px; }
+  .hero-note { margin-top: 14px; font-size: 13px; color: var(--fg-dim); }
+  .shot { margin-top: 48px; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; background: var(--card); }
+  .shot img { width: 100%; }
+
+  /* generic section */
+  section { padding-block: 72px; }
+  .band { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .sec-head { text-align: center; max-width: 60ch; margin: 0 auto 44px; }
+  .sec-head h2 { font-size: clamp(26px, 4vw, 38px); font-weight: 700; letter-spacing: -0.015em; }
+  .sec-head p { color: var(--fg-dim); margin-top: 14px; font-size: 17px; }
+  .kicker { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+  /* speed table */
+  .table-scroll { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  table.bench { border-collapse: collapse; width: 100%; min-width: 520px; background: var(--card); font-variant-numeric: tabular-nums; }
+  table.bench th, table.bench td { padding: 15px 18px; text-align: left; border-bottom: 1px solid var(--border); }
+  table.bench thead th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--fg-dim); font-weight: 600; }
+  table.bench td.num { font-family: var(--mono); font-size: 15px; }
+  table.bench tr.ours td { background: color-mix(in srgb, var(--accent) 8%, transparent); font-weight: 600; }
+  table.bench tr.ours .name { color: var(--accent); }
+  table.bench tr:last-child td { border-bottom: none; }
+  .bench-cap { margin-top: 14px; font-size: 13px; color: var(--fg-dim); text-align: center; }
+
+  /* feature grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .feat { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .feat .ic { width: 38px; height: 38px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); display: grid; place-items: center; margin-bottom: 14px; }
+  .feat h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .feat p { color: var(--fg-dim); font-size: 15px; margin: 8px 0 0; }
+
+  /* gallery */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .gcard { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); box-shadow: var(--shadow); }
+  .gcard img { width: 100%; }
+  .gcard .cap { padding: 13px 16px; font-size: 14px; }
+  .gcard .cap b { font-weight: 600; }
+  .gcard .cap span { color: var(--fg-dim); display: block; font-size: 13px; margin-top: 2px; }
+
+  /* pricing */
+  .price-wrap { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 760px; margin: 0 auto; }
+  .plan { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; display: flex; flex-direction: column; gap: 6px; }
+  .plan.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset, var(--shadow); }
+  .plan .tag { font-size: 13px; font-weight: 600; color: var(--fg-dim); letter-spacing: 0.02em; }
+  .plan .amt { font-family: var(--display); font-size: 34px; font-weight: 700; letter-spacing: -0.02em; margin-top: 4px; }
+  .plan .amt small { font-size: 15px; font-weight: 500; color: var(--fg-dim); }
+  .plan ul { list-style: none; padding: 0; margin: 16px 0 22px; display: flex; flex-direction: column; gap: 10px; }
+  .plan li { position: relative; padding-left: 26px; color: var(--fg); font-size: 15px; }
+  .plan li::before { content: "✓"; position: absolute; left: 0; color: var(--good); font-weight: 700; }
+  .plan .btn { justify-content: center; margin-top: auto; }
+
+  /* footer */
+  footer { border-top: 1px solid var(--border); padding-block: 36px; color: var(--fg-dim); font-size: 14px; }
+  .foot-row { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; }
+  .foot-row a { color: var(--fg-dim); text-decoration: none; }
+  .foot-row a:hover { color: var(--fg); }
+  .foot-row .spacer { margin-left: auto; }
+
+  @media (max-width: 820px) {
+    .grid, .gallery { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .nav-links a:not(.btn) { display: none; }
+    .grid, .gallery, .price-wrap { grid-template-columns: 1fr; }
+    section { padding-block: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-row">
+    <div class="brand"><span class="mark">▤</span> PDF Reader</div>
+    <nav class="nav-links">
+      <a href="#speed">Speed</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-primary" href="https://github.com/JONGMIN-PARK/JmpPdfReader-site/releases/latest" target="_blank" rel="noopener">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" style="padding-block: 0;">
+    <div class="wrap" style="padding-top: 64px;">
+      <span class="eyebrow">⚡ Native Rust + PDFium engine</span>
+      <h1>The PDF reader that <span class="hl">opens before you blink</span></h1>
+      <p class="lede">A fast, native PDF viewer and editor for Windows. It opens and scrolls quicker than Edge and Chrome — on a fraction of the memory — and edits everything on your own machine.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/JONGMIN-PARK/JmpPdfReader-site/releases/latest" target="_blank" rel="noopener">Download free trial</a>
+        <a class="btn btn-ghost" href="#pricing">Buy a license</a>
+      </div>
+      <p class="hero-note">7-day free trial · Windows 10 &amp; 11 · single .exe, no installer required</p>
+      <div class="shot">
+        <img src="screenshots/hero-dark.png" alt="PDF Reader showing a document in dark mode with thumbnails and toolbar" width="1280" height="864" loading="eager">
+      </div>
+    </div>
+  </section>
+
+  <!-- SPEED -->
+  <section id="speed" class="band">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Benchmarked</div>
+        <h2>Measurably faster than the browser</h2>
+        <p>Cold start, black-box: each viewer opens the same PDF from a fresh profile while the screen is captured; the time is the last visible change before the screen goes quiet. Edge and Chrome use the same PDFium engine — the difference is architecture.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="bench">
+          <thead>
+            <tr><th>Viewer</th><th>Open → first page</th><th>Jump to last page</th><th>Memory</th></tr>
+          </thead>
+          <tbody>
+            <tr class="ours"><td class="name">PDF Reader</td><td class="num">825 ms</td><td class="num">150 ms</td><td class="num">163 → 363 MB</td></tr>
+            <tr><td>Microsoft Edge 157</td><td class="num">1,274 ms</td><td class="num">220 ms</td><td class="num">508 → 954 MB</td></tr>
+            <tr><td>Google Chrome 156</td><td class="num">1,240 ms</td><td class="num">—</td><td class="num">410 → 384 MB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="bench-cap">120-page text document · 2560×1600 · release build. Full method and the heavy-vector results are in the benchmark doc.</p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Everything in one window</div>
+        <h2>A full reader and editor</h2>
+        <p>Read, annotate, edit, organize and print — without round-trips to the cloud or a second app.</p>
+      </div>
+      <div class="grid">
+        <div class="feat"><div class="ic">⚡</div><h3>Instant rendering</h3><p>512&nbsp;px tiles, visible-area-first, newest-request-wins, with extra render processes only for heavy pages.</p></div>
+        <div class="feat"><div class="ic">✍</div><h3>Annotate</h3><p>Highlight, underline, strikethrough, sticky notes and freehand pen — written as standard PDF annotations.</p></div>
+        <div class="feat"><div class="ic">T</div><h3>Add text &amp; sign</h3><p>Type in any installed font with automatic subsetting, draw or import a signature, move and resize freely.</p></div>
+        <div class="feat"><div class="ic">▦</div><h3>Organize pages</h3><p>Reorder by drag, rotate, delete, insert files, extract a selection, split every N pages — with real undo.</p></div>
+        <div class="feat"><div class="ic">◱</div><h3>Forms</h3><p>Fill AcroForm fields — text, checkbox, radio, combo and list — with appearances other viewers honour.</p></div>
+        <div class="feat"><div class="ic">⎙</div><h3>Print preview</h3><p>A Chrome-style preview with page ranges and orientation that shows exactly how each page lands on paper.</p></div>
+        <div class="feat"><div class="ic">🔍</div><h3>Search &amp; navigate</h3><p>Incremental full-text search, clickable in-document links and outline, tabs, and resume where you left off.</p></div>
+        <div class="feat"><div class="ic">가</div><h3>Korean &amp; CJK ready</h3><p>Non-embedded fonts fall back to system fonts; Korean paths and text just work.</p></div>
+        <div class="feat"><div class="ic">◐</div><h3>Dark mode</h3><p>A complete dark theme for the whole window, plus full screen and a presentation mode.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">See it</div>
+        <h2>Clean, native, out of your way</h2>
+      </div>
+      <div class="gallery">
+        <div class="gcard"><img src="screenshots/viewer-light.png" alt="PDF Reader in light mode" loading="lazy"><div class="cap"><b>Light &amp; dark</b><span>Follows your Windows theme.</span></div></div>
+        <div class="gcard"><img src="screenshots/trial-banner.png" alt="Free trial banner" loading="lazy"><div class="cap"><b>7-day free trial</b><span>Every feature unlocked while you try it.</span></div></div>
+        <div class="gcard"><img src="screenshots/view-only.png" alt="View-only mode after trial" loading="lazy"><div class="cap"><b>Fair after the trial</b><span>Stays a full viewer; editing unlocks with a key.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Simple pricing</div>
+        <h2>Try free, then own it</h2>
+        <p>Start with a 7-day trial — all features, no account. Keep reading for free forever; unlock editing, saving and printing with a license tied to your PC.</p>
+      </div>
+      <div class="price-wrap">
+        <div class="plan">
+          <span class="tag">Free trial</span>
+          <div class="amt">$0 <small>/ 7 days</small></div>
+          <ul>
+            <li>Every feature unlocked</li>
+            <li>No account, no sign-up</li>
+            <li>Full viewer forever after</li>
+          </ul>
+          <a class="btn btn-ghost" href="https://github.com/JONGMIN-PARK/JmpPdfReader-site/releases/latest" target="_blank" rel="noopener">Download</a>
+        </div>
+        <div class="plan featured">
+          <span class="tag">Lifetime license</span>
+          <div class="amt">$29 <small>/ one-time</small></div>
+          <ul>
+            <li>Edit, save, print — unlocked</li>
+            <li>Licensed to one PC</li>
+            <li>Free updates</li>
+          </ul>
+          <a class="btn btn-primary" href="https://github.com/JONGMIN-PARK/JmpPdfReader-site" target="_blank" rel="noopener">Buy a license</a>
+        </div>
+      </div>
+      <p class="bench-cap" style="margin-top: 24px;">Price shown is a placeholder — set your own on your store (Paddle / Lemon Squeezy) and point the buy button there.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="brand" style="font-size: 15px;"><span class="mark" style="width:22px;height:22px;font-size:13px;">▤</span> PDF Reader</div>
+    <a href="https://github.com/JONGMIN-PARK/JmpPdfReader-site" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/JONGMIN-PARK/JmpPdfReader-site/releases/latest" target="_blank" rel="noopener">Releases</a>
+    <span class="spacer">Built with Rust, Slint &amp; PDFium.</span>
+  </div>
+</footer>
+
+</body>
+</html>
