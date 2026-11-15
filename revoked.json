@@ -1,0 +1,4 @@
+{
+  "_comment": "Revoked license ids. The app fetches this when online; a key whose id is listed here drops to view-only. Add the id passed to `keygen sign --id ...`.",
+  "revoked": []
+}
